@@ -11,10 +11,12 @@ import lombok.extern.log4j.Log4j2;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
@@ -126,6 +128,40 @@ public class InMemoryQueueBackend implements QueueBackendService{
             .findFirst()
             .get();
         return queueEntity.getQueue().indexOf(ne);
+    }
+    
+    @Override
+    public String estimate(int position) {
+	long estimatedSeconds = (long) (60 * 4.5 * position);
+	Duration duration = Duration.ofSeconds(estimatedSeconds);
+	StringBuilder builder = new StringBuilder();
+
+	long hrs = getHours(duration);
+	if (hrs > 0) {
+	    builder.append(format(hrs, "hour"));
+	}
+	long mins = getMinutes(duration);
+	if (mins > 0) {
+	    if (builder.length() > 0)
+		builder.append(" and ");
+	    builder.append(format(mins, "minute"));
+	}
+	return builder.toString();
+    }
+    
+    private long getHours(Duration duration) {
+	return duration.toHours();
+    }
+    
+    private long getMinutes(Duration duration) {
+	return duration.toMinutes() % 60;
+    }
+
+    private String format(long quantity, String unit) {
+	String format = String.format("%s %s", quantity, unit);
+	if (quantity > 1)
+	    format += "s";
+	return format;
     }
 
     private String getTicketKey(String queueName, Integer number) {

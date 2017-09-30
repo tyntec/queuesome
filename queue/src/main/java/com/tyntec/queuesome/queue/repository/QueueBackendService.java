@@ -22,6 +22,8 @@ public interface QueueBackendService {
     List<QueueEntity> getAllQueues();
 
     Integer getTicketPosition(String queueName, Integer ticketNumber);
+    
+    String estimate(int ticketPosition);
 
     QueueEntity getQueue(String name);
 
