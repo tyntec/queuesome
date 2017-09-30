@@ -27,6 +27,10 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web') {
 		exclude module: 'spring-boot-starter-logging'
 	}
+	compile(group: 'ai.api', name: 'libai', version: '1.6.12'){
+		exclude module: 'slf4j-api'
+	}
+	compile group: 'org.apache.logging.log4j', name: 'log4j-web', version: '2.7'
 	compile('org.springframework.boot:spring-boot-starter-log4j2')
 	compileOnly('org.projectlombok:lombok')
 	testCompile('org.springframework.boot:spring-boot-starter-test')

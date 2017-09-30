@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
 import com.tyntec.queuesome.queue.domain.QueueEntity;
 import com.tyntec.queuesome.queue.domain.QueueTicketEntity;
+import com.tyntec.queuesome.queue.service.Notifier;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.PreDestroy;
@@ -19,6 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Log4j2
 public class InMemoryQueueBackend implements QueueBackendService{
 
+    Notifier notifier;
+
     Map<String, QueueEntity> queuesIndex = new HashMap<>();
     Map<String, QueueTicketEntity> ticketIndex = new HashMap<>();
 
@@ -26,7 +29,7 @@ public class InMemoryQueueBackend implements QueueBackendService{
     File queueIdxFile = new File(System.getProperty("java.io.tmpdir") + "/queueidx.json");
     File ticketIdxFile = new File(System.getProperty("java.io.tmpdir") + "/ticketIndex.json");
 
-    public InMemoryQueueBackend(){
+    public InMemoryQueueBackend(Notifier notifier){
         try {
             if(queueIdxFile.exists() && ticketIdxFile.exists()) {
                 TypeReference<HashMap<String,QueueEntity>> qtypeRef
@@ -41,6 +44,7 @@ public class InMemoryQueueBackend implements QueueBackendService{
         } catch (IOException ex) {
             log.error("Could not load", ex);
         }
+        this.notifier = notifier;
     }
 
     @Override
@@ -69,6 +73,11 @@ public class InMemoryQueueBackend implements QueueBackendService{
             throw new IllegalArgumentException("Ticket number does not exist");
         }
         queueEntity.getQueue().remove(queueTicketEntity);
+
+        QueueTicketEntity notifiedTicket = ticketIndex.get(getTicketKey(queueName, ticketNumber + 6));
+        if(notifiedTicket != null) {
+            notifier.sendNotification(queueEntity.getName(), notifiedTicket.getWho(), "Hi in about 30 minutes you will be next");
+        }
         return queueTicketEntity;
     }
 
