@@ -1,18 +1,47 @@
 package com.tyntec.queuesome.queue.repository;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
 import com.tyntec.queuesome.queue.domain.QueueEntity;
 import com.tyntec.queuesome.queue.domain.QueueTicketEntity;
+import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.PreDestroy;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Log4j2
 public class InMemoryQueueBackend implements QueueBackendService{
 
     Map<String, QueueEntity> queuesIndex = new HashMap<>();
     Map<String, QueueTicketEntity> ticketIndex = new HashMap<>();
+
+    ObjectMapper mapper = new ObjectMapper();
+    File queueIdxFile = new File(System.getProperty("java.io.tmpdir") + "/queueidx.json");
+    File ticketIdxFile = new File(System.getProperty("java.io.tmpdir") + "/ticketIndex.json");
+
+    public InMemoryQueueBackend(){
+        try {
+            if(queueIdxFile.exists() && ticketIdxFile.exists()) {
+                TypeReference<HashMap<String,QueueEntity>> qtypeRef
+                        = new TypeReference<HashMap<String,QueueEntity>>() {};
+                TypeReference<HashMap<String,QueueTicketEntity>> ttypeRef
+                        = new TypeReference<HashMap<String,QueueTicketEntity>>() {};
+                queuesIndex = mapper.readValue(queueIdxFile, qtypeRef);
+                log.info("Loaded: {}", queuesIndex);
+                ticketIndex = mapper.readValue(ticketIdxFile, ttypeRef);
+                log.info("Loaded: {}", ticketIndex);
+            }
+        } catch (IOException ex) {
+            log.error("Could not load", ex);
+        }
+    }
 
     @Override
     public QueueTicketEntity enQueue(String queueName, String who) {
@@ -59,7 +88,7 @@ public class InMemoryQueueBackend implements QueueBackendService{
 
     @Override
     public QueueEntity createQueue(String name, String description) {
-        QueueEntity q = new QueueEntity(name, description , new ArrayList<>(), new AtomicInteger(0));
+        QueueEntity q = new QueueEntity(name, description , new ArrayList<>(), new AtomicInteger(0), 0);
         queuesIndex.put(name, q);
         return q;
     }
@@ -83,4 +112,9 @@ public class InMemoryQueueBackend implements QueueBackendService{
         return queueName + "-" + number.toString();
     }
 
+    @PreDestroy
+    private void persist() throws IOException {
+        mapper.writeValue(queueIdxFile, queuesIndex);
+        mapper.writeValue(ticketIdxFile, ticketIndex);
+    }
 }

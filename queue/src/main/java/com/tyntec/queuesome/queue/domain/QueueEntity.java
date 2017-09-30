@@ -15,8 +15,13 @@ public class QueueEntity {
     private String description;
     private List<QueueTicketEntity> queue;
     private AtomicInteger lastAssignedNumber;
+    private Integer currentSize;
 
     public Integer getCurrentSize() {
         return queue == null ? 0 : queue.size();
+    }
+
+    public void setLastAssignedNumber(Integer number) {
+        lastAssignedNumber = new AtomicInteger(number);
     }
 }
