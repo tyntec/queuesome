@@ -37,6 +37,12 @@ public class QueueRestService {
         return ResponseEntity.ok(qSvc.getQueue(queueName));
     }
 
+    @RequestMapping(value = "/{name}/ticketPosition", method = RequestMethod.GET)
+    public ResponseEntity<Integer> getTicketPosition(@PathVariable("name") String queueName,
+                                                         @RequestParam("number") Integer number) {
+        return ResponseEntity.ok(qSvc.getTicketPosition(queueName, number));
+    }
+
     @RequestMapping(value = "/{name}", method = RequestMethod.DELETE)
     public void deleteQueue(@PathVariable("name") String queueName) {
         qSvc.deleteQueue(queueName);

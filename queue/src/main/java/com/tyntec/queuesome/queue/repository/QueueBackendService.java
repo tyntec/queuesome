@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface QueueBackendService {
 
-
     QueueTicketEntity enQueue(String queueName, String who);
 
     QueueTicketEntity deQueue(String queueName, Integer ticketNumber);
@@ -21,6 +20,8 @@ public interface QueueBackendService {
     void deleteQueue(String name);
 
     List<QueueEntity> getAllQueues();
+
+    Integer getTicketPosition(String queueName, Integer ticketNumber);
 
     QueueEntity getQueue(String name);
 

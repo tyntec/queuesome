@@ -108,6 +108,17 @@ public class InMemoryQueueBackend implements QueueBackendService{
         return queuesIndex.get(name);
     }
 
+    @Override
+    public Integer getTicketPosition(String queueName, Integer ticketNumber) {
+        QueueEntity queueEntity = queuesIndex.get(queueName);
+        if (queueEntity == null) return 0;
+        QueueTicketEntity ne = queueEntity.getQueue().stream()
+            .filter(queueTicketEntity -> queueTicketEntity.getNumber() == ticketNumber )
+            .findFirst()
+            .get();
+        return queueEntity.getQueue().indexOf(ne);
+    }
+
     private String getTicketKey(String queueName, Integer number) {
         return queueName + "-" + number.toString();
     }
