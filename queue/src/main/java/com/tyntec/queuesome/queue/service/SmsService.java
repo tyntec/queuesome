@@ -7,6 +7,7 @@ import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import com.tyntec.queuesome.queue.domain.QueueEntity;
 import com.tyntec.queuesome.queue.domain.QueueTicketEntity;
+import com.tyntec.queuesome.queue.repository.PassphraseProvider;
 import com.tyntec.queuesome.queue.repository.QueueBackendService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class SmsService {
 
     @Autowired
     AIDataService dataService;
+
+    @Autowired
+    PassphraseProvider passphrase;
 
     @RequestMapping(name = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_XML_VALUE)
     public String getSms(@RequestParam("From") String from, @RequestParam("To") String to, @RequestParam("Body") String body) throws AIServiceException {
@@ -68,7 +72,11 @@ public class SmsService {
             case "enqueue":
                 if (queueTicketEntity == null) {
                     queueTicketEntity = qSvc.enQueue(to, from);
-                    return createSmsResponse("Welcome. Your ticket number is " + queueTicketEntity.getNumber() + ".");
+                    QueueEntity queue = qSvc.getQueue(to);
+                    return createSmsResponse("Welcome! Your ticket number is " + queueTicketEntity.getNumber() +
+                            " Passphrase: " + passphrase.generatePassphrase() + ". There are "
+                            + (queue.getQueue().size() - 1) + " people waiting in front of you. " +
+                            getEstimationText(queueTicketEntity));
                 }
 
             case "queue_status":
@@ -76,7 +84,7 @@ public class SmsService {
                 QueueEntity queue = qSvc.getQueue(to);
                 if (queueTicketEntity != null) {
                     return createSmsResponse("Appointment is already booked. Your ticket number is " + queueTicketEntity.getNumber()
-                            + ". There are " + (queue.getQueue().size() - 1) + " waiting in front of you." + getEstimationText(queueTicketEntity));
+                            + ". There are " + (queue.getQueue().size() - 1) + " people waiting in front of you." + getEstimationText(queueTicketEntity));
                 } else {
                     return createSmsResponse("Welcome to '" + queue.getDescription() + "' there are currently " + queue.getCurrentSize()
                             + " people waiting in line." + getEstimationText(queueTicketEntity));
@@ -84,10 +92,11 @@ public class SmsService {
         }
 
     }
-    
+
     private String getEstimationText(QueueTicketEntity ticket) {
-	int position = qSvc.getTicketPosition(ticket.getQueueName(), ticket.getNumber());
-	String estimate = qSvc.estimate(position);
+        if (ticket == null) return "Ticket not found.";
+        int position = qSvc.getTicketPosition(ticket.getQueueName(), ticket.getNumber());
+        String estimate = qSvc.estimate(position);
         return " Estimated time remaining: " + estimate;
     }
 

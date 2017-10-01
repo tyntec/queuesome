@@ -37,11 +37,11 @@ public class RestcommNotifier implements Notifier {
         MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
         parameters.add("To", "+" + to);
         parameters.add("From", "+" + from);
-        parameters.add("Body",  text);
+        parameters.add("Body", text);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", authHeader);
-// Create the http entity for the request
+        // Create the http entity for the request
         HttpEntity<MultiValueMap<String,String>> entity =
                 new HttpEntity<MultiValueMap<String, String>>(parameters, headers);
 

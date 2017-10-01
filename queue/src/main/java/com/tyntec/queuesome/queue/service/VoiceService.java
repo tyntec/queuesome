@@ -2,6 +2,7 @@ package com.tyntec.queuesome.queue.service;
 
 import com.tyntec.queuesome.queue.domain.QueueEntity;
 import com.tyntec.queuesome.queue.domain.QueueTicketEntity;
+import com.tyntec.queuesome.queue.repository.PassphraseProvider;
 import com.tyntec.queuesome.queue.repository.QueueBackendService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class VoiceService {
     @Autowired
     QueueBackendService qSvc;
 
+    @Autowired
+    PassphraseProvider passphrase;
+
     @RequestMapping(name = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_XML_VALUE)
     public String getVoice(@RequestParam("From") String from, @RequestParam("To") String to, @RequestParam("CallSid") String callSid,
                            @RequestParam("AccountSid") String accountSid, @RequestParam("CallStatus") String callStatus,
@@ -38,7 +42,8 @@ public class VoiceService {
         }
         if (queueTicketEntity == null) {
             queueTicketEntity = qSvc.enQueue(to, from);
-            return createTtsResponse("Your ticket number is " + queueTicketEntity.getNumber() + "." + getEstimationText(queueTicketEntity));
+            return createTtsResponse("Your ticket number is " + queueTicketEntity.getNumber() +
+                    ". Passphrase " + passphrase + "." + getEstimationText(queueTicketEntity));
         } else {
             QueueEntity queue = qSvc.getQueue(to);
             return createTtsResponse("Appointment is already booked. Your ticket number is " + queueTicketEntity.getNumber()
@@ -48,8 +53,9 @@ public class VoiceService {
     }
     
     private String getEstimationText(QueueTicketEntity ticket) {
-	int position = qSvc.getTicketPosition(ticket.getQueueName(), ticket.getNumber());
-	String estimate = qSvc.estimate(position);
+        if (ticket == null) return "Ticket not found.";
+    	int position = qSvc.getTicketPosition(ticket.getQueueName(), ticket.getNumber());
+    	String estimate = qSvc.estimate(position);
         return " Estimated time remaining: " + estimate;
     }
     
