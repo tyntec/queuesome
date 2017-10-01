@@ -41,7 +41,7 @@ public class RestcommNotifier implements Notifier {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", authHeader);
-// Create the http entity for the request
+        // Create the http entity for the request
         HttpEntity<MultiValueMap<String,String>> entity =
                 new HttpEntity<MultiValueMap<String, String>>(parameters, headers);
 
