@@ -133,6 +133,9 @@ public class InMemoryQueueBackend implements QueueBackendService{
     
     @Override
     public String estimate(int position) {
+	if(position == 0) {
+	    return "none.";
+	}
 	long estimatedSeconds = (long) (60 * 4.5 * position);
 	Duration duration = Duration.ofSeconds(estimatedSeconds);
 	StringBuilder builder = new StringBuilder();
@@ -147,6 +150,7 @@ public class InMemoryQueueBackend implements QueueBackendService{
 		builder.append(" ");
 	    builder.append(format(mins, "minute"));
 	}
+	builder.append(".");
 	return builder.toString();
     }
     
