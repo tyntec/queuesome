@@ -75,11 +75,11 @@ public class SmsService {
             default:
                 QueueEntity queue = qSvc.getQueue(to);
                 if (queueTicketEntity != null) {
-                    return createSmsResponse("Your ticket number is still " + queueTicketEntity.getNumber()
-                            + ". There are " + (queue.getQueue().size() - 1) + " waiting in front of you.");
+                    return createSmsResponse("Appointment is already booked. Your ticket number is " + queueTicketEntity.getNumber()
+                            + ". There are " + (queue.getQueue().size() - 1) + " waiting in front of you." + getEstimationText(queueTicketEntity));
                 } else {
                     return createSmsResponse("Welcome to '" + queue.getDescription() + "' there are currently " + queue.getCurrentSize()
-                            + " people waiting in line.");
+                            + " people waiting in line." + getEstimationText(queueTicketEntity));
                 }
         }
 

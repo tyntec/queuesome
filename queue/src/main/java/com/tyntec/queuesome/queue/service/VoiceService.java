@@ -38,11 +38,11 @@ public class VoiceService {
         }
         if (queueTicketEntity == null) {
             queueTicketEntity = qSvc.enQueue(to, from);
-            return createTtsResponse("Your ticket number is " + queueTicketEntity.getNumber() + ".");
+            return createTtsResponse("Your ticket number is " + queueTicketEntity.getNumber() + "." + getEstimationText(queueTicketEntity));
         } else {
             QueueEntity queue = qSvc.getQueue(to);
-            return createTtsResponse("Your ticket number is still " + queueTicketEntity.getNumber()
-                    + ". There are " + (queue.getQueue().size() - 1) + " waiting in front of you.");
+            return createTtsResponse("Appointment is already booked. Your ticket number is " + queueTicketEntity.getNumber()
+                    + ". There are " + (queue.getQueue().size() - 1) + " waiting in front of you." + getEstimationText(queueTicketEntity));
         }
 
     }
