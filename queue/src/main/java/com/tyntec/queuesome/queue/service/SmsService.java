@@ -76,7 +76,7 @@ public class SmsService {
                     int position = qSvc.getTicketPosition(queueTicketEntity.getQueueName(), queueTicketEntity.getNumber());
                     return createSmsResponse("Welcome! Your ticket number is " + queueTicketEntity.getNumber() +
                             " Passphrase: " + passphrase.generatePassphrase() + ". "
-                            + getWaitingPeopleText() + getEstimationText(position));
+                            + getWaitingPeopleText(position) + getEstimationText(position));
                 }
 
             case "queue_status":
@@ -85,7 +85,7 @@ public class SmsService {
                 if (queueTicketEntity != null) {
                     int position = qSvc.getTicketPosition(queueTicketEntity.getQueueName(), queueTicketEntity.getNumber());
                     return createSmsResponse("Appointment is already booked. Your ticket number is " + queueTicketEntity.getNumber()
-                            + ". " + getWaitingPeopleText() + getEstimationText(position));
+                            + ". " + getWaitingPeopleText(position) + getEstimationText(position));
                 } else {
                     return createSmsResponse("Welcome to '" + queue.getDescription() + "'. There are currently " + queue.getCurrentSize()
                             + " people waiting in line." + getEstimationText(queue.getQueue().size() - 1));
@@ -96,12 +96,12 @@ public class SmsService {
     
     private String getWaitingPeopleText(int position) {
 	if (position == 0)
-	    return "No people are waiting in front of you."
+	    return "No people are waiting in front of you.";
 	else
 	    if (position == 1)
-		"1 person is waiting in front of you."
+		return "1 person is waiting in front of you.";
 	    else
-		"There are " + position + " people waiting in front of you."
+		return "There are " + position + " people waiting in front of you.";
     }
 
     private String getEstimationText(int position) {

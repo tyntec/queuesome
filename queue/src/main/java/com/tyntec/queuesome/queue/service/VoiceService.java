@@ -56,17 +56,15 @@ public class VoiceService {
     
     private String getWaitingPeopleText(int position) {
 	if (position == 0)
-	    return "No people are waiting in front of you."
+	    return "No people are waiting in front of you.";
 	else
 	    if (position == 1)
-		"1 person is waiting in front of you."
+		return "1 person is waiting in front of you.";
 	    else
-		"There are " + position + " people waiting in front of you."
+		return "There are " + position + " people waiting in front of you.";
     }
     
-    private String getEstimationText(QueueTicketEntity ticket) {
-        if (ticket == null) return "Ticket not found.";
-    	int position = qSvc.getTicketPosition(ticket.getQueueName(), ticket.getNumber());
+    private String getEstimationText(int position) {
     	String estimate = qSvc.estimate(position);
         return " Estimated time remaining: " + estimate;
     }
