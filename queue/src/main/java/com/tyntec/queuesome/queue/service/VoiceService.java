@@ -42,14 +42,26 @@ public class VoiceService {
         }
         if (queueTicketEntity == null) {
             queueTicketEntity = qSvc.enQueue(to, from);
+            int position = qSvc.getTicketPosition(queueTicketEntity.getQueueName(), queueTicketEntity.getNumber());
             return createTtsResponse("Your ticket number is " + queueTicketEntity.getNumber() +
-                    ". Passphrase " + passphrase + "." + getEstimationText(queueTicketEntity));
+                    ". Passphrase " + passphrase + "." + getWaitingPeopleText(position) + getEstimationText(position));
         } else {
             QueueEntity queue = qSvc.getQueue(to);
+            int position = qSvc.getTicketPosition(queueTicketEntity.getQueueName(), queueTicketEntity.getNumber());
             return createTtsResponse("Appointment is already booked. Your ticket number is " + queueTicketEntity.getNumber()
-                    + ". There are " + (queue.getQueue().size() - 1) + " waiting in front of you." + getEstimationText(queueTicketEntity));
+                    + ". " + getWaitingPeopleText(position) + getEstimationText(position));
         }
 
+    }
+    
+    private String getWaitingPeopleText(int position) {
+	if (position == 0)
+	    return "No people are waiting in front of you."
+	else
+	    if (position == 1)
+		"1 person is waiting in front of you."
+	    else
+		"There are " + position + " people waiting in front of you."
     }
     
     private String getEstimationText(QueueTicketEntity ticket) {
