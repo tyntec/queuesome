@@ -38,11 +38,11 @@ public class VoiceService {
         }
         if (queueTicketEntity == null) {
             queueTicketEntity = qSvc.enQueue(to, from);
-            return createTtsResponse("You got ticket number " + queueTicketEntity.getNumber());
+            return createTtsResponse("Your ticket number is " + queueTicketEntity.getNumber() + ".");
         } else {
             QueueEntity queue = qSvc.getQueue(to);
             return createTtsResponse("Your ticket number is still " + queueTicketEntity.getNumber()
-                    + ". There are " + (queue.getQueue().size() - 1) + " waiting before you");
+                    + ". There are " + (queue.getQueue().size() - 1) + " waiting in front of you.");
         }
 
 

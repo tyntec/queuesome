@@ -55,13 +55,13 @@ public class SmsService {
                     if (aiResponse.getResult().getParameters().containsKey("number")) {
                         int num = aiResponse.getResult().getParameters().get("number").getAsInt();
                         if (num != queueTicketEntity.getNumber()) {
-                            return createSmsResponse("Your ticket number is " + queueTicketEntity.getNumber() + " not " + num);
+                            return createSmsResponse("Your ticket number is " + queueTicketEntity.getNumber() + ", not " + num + ".");
                         }
                     }
                     qSvc.removeTicketFromQueue(queueTicketEntity.getQueueName(), queueTicketEntity.getNumber());
-                    return createSmsResponse("Your ticket number " + queueTicketEntity.getNumber() + " has been cancelled");
+                    return createSmsResponse("Your ticket number " + queueTicketEntity.getNumber() + " has been cancelled.");
                 } else {
-                    return createSmsResponse("You dont have any tickets for the queue");
+                    return createSmsResponse("You don't have any tickets in the queue.");
                 }
             }
             case "enqueue":
@@ -69,22 +69,21 @@ public class SmsService {
 
                 if (queueTicketEntity == null) {
                     queueTicketEntity = qSvc.enQueue(to, from);
-                    return createSmsResponse("You got ticket number " + queueTicketEntity.getNumber());
+                    return createSmsResponse("Your ticket number is " + queueTicketEntity.getNumber() + ".");
                 }
             case "queue_status":
             default:
                 QueueEntity queue = qSvc.getQueue(to);
                 if (queueTicketEntity != null) {
                     return createSmsResponse("Your ticket number is still " + queueTicketEntity.getNumber()
-                            + ". There are " + (queue.getQueue().size() - 1) + " waiting before you");
+                            + ". There are " + (queue.getQueue().size() - 1) + " waiting in front of you.");
                 } else {
-                    return createSmsResponse(" Welcome to '" + queue.getDescription() + "' there are currently " + queue.getCurrentSize()
-                            + " waiting.");
+                    return createSmsResponse("Welcome to '" + queue.getDescription() + "' there are currently " + queue.getCurrentSize()
+                            + " people waiting in line.");
                 }
         }
 
     }
-    
 
     private String createSmsResponse(String text) {
         return "<Response><Sms>" + text + "</Sms></Response>";
