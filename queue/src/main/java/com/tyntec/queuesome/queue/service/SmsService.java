@@ -59,18 +59,18 @@ public class SmsService {
                         }
                     }
                     qSvc.removeTicketFromQueue(queueTicketEntity.getQueueName(), queueTicketEntity.getNumber());
-                    return createSmsResponse("Your ticket number " + queueTicketEntity.getNumber() + " has been cancelled.");
+                    return createSmsResponse("Thank you. Your ticket number " + queueTicketEntity.getNumber() + " has been cancelled.");
                 } else {
                     return createSmsResponse("You don't have any tickets in the queue.");
                 }
             }
+
             case "enqueue":
-
-
                 if (queueTicketEntity == null) {
                     queueTicketEntity = qSvc.enQueue(to, from);
-                    return createSmsResponse("Your ticket number is " + queueTicketEntity.getNumber() + ".");
+                    return createSmsResponse("Welcome. Your ticket number is " + queueTicketEntity.getNumber() + ".");
                 }
+
             case "queue_status":
             default:
                 QueueEntity queue = qSvc.getQueue(to);

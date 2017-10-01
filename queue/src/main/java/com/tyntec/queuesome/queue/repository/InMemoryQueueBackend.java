@@ -78,7 +78,8 @@ public class InMemoryQueueBackend implements QueueBackendService{
 
         QueueTicketEntity notifiedTicket = ticketIndex.get(getTicketKey(queueName, ticketNumber + 6));
         if(notifiedTicket != null) {
-            notifier.sendNotification(queueEntity.getName(), notifiedTicket.getWho(), "Hi in about 30 minutes you will be next");
+            notifier.sendNotification(queueEntity.getName(), notifiedTicket.getWho(),
+                    "Your ticket " + ticketNumber + " is due in approximately 30 minutes.");
         }
         return queueTicketEntity;
     }
