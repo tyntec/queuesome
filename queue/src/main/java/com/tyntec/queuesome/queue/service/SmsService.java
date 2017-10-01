@@ -84,6 +84,12 @@ public class SmsService {
         }
 
     }
+    
+    private String getEstimationText(QueueTicketEntity ticket) {
+	int position = qSvc.getTicketPosition(ticket.getQueueName(), ticket.getNumber());
+	String estimate = qSvc.estimate(position);
+        return " Estimated time remaining: " + estimate;
+    }
 
     private String createSmsResponse(String text) {
         return "<Response><Sms>" + text + "</Sms></Response>";

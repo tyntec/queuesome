@@ -45,10 +45,14 @@ public class VoiceService {
                     + ". There are " + (queue.getQueue().size() - 1) + " waiting in front of you.");
         }
 
-
-
     }
-
+    
+    private String getEstimationText(QueueTicketEntity ticket) {
+	int position = qSvc.getTicketPosition(ticket.getQueueName(), ticket.getNumber());
+	String estimate = qSvc.estimate(position);
+        return " Estimated time remaining: " + estimate;
+    }
+    
     private String createTtsResponse(String text) {
         return "<Response><Say>" + text + "</Say></Response>";
     }
