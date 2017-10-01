@@ -144,7 +144,7 @@ public class InMemoryQueueBackend implements QueueBackendService{
 	long mins = getMinutes(duration);
 	if (mins > 0) {
 	    if (builder.length() > 0)
-		builder.append(" and ");
+		builder.append(" ");
 	    builder.append(format(mins, "minute"));
 	}
 	return builder.toString();
