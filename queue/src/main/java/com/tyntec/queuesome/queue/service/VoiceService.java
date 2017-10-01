@@ -53,8 +53,9 @@ public class VoiceService {
     }
     
     private String getEstimationText(QueueTicketEntity ticket) {
-	int position = qSvc.getTicketPosition(ticket.getQueueName(), ticket.getNumber());
-	String estimate = qSvc.estimate(position);
+        if (ticket == null) return "Ticket not found.";
+    	int position = qSvc.getTicketPosition(ticket.getQueueName(), ticket.getNumber());
+    	String estimate = qSvc.estimate(position);
         return " Estimated time remaining: " + estimate;
     }
     
