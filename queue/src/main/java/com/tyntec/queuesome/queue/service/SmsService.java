@@ -68,7 +68,10 @@ public class SmsService {
             case "enqueue":
                 if (queueTicketEntity == null) {
                     queueTicketEntity = qSvc.enQueue(to, from);
-                    return createSmsResponse("Welcome. Your ticket number is " + queueTicketEntity.getNumber() + ".");
+                    QueueEntity queue = qSvc.getQueue(to);
+                    return createSmsResponse("Welcome! Your ticket number is " + queueTicketEntity.getNumber() +
+                            ". There are " + (queue.getQueue().size() - 1) + " people waiting in front of you. " +
+                            getEstimationText(queueTicketEntity));
                 }
 
             case "queue_status":
@@ -76,7 +79,7 @@ public class SmsService {
                 QueueEntity queue = qSvc.getQueue(to);
                 if (queueTicketEntity != null) {
                     return createSmsResponse("Appointment is already booked. Your ticket number is " + queueTicketEntity.getNumber()
-                            + ". There are " + (queue.getQueue().size() - 1) + " waiting in front of you." + getEstimationText(queueTicketEntity));
+                            + ". There are " + (queue.getQueue().size() - 1) + " people waiting in front of you." + getEstimationText(queueTicketEntity));
                 } else {
                     return createSmsResponse("Welcome to '" + queue.getDescription() + "' there are currently " + queue.getCurrentSize()
                             + " people waiting in line." + getEstimationText(queueTicketEntity));
@@ -84,10 +87,10 @@ public class SmsService {
         }
 
     }
-    
+
     private String getEstimationText(QueueTicketEntity ticket) {
-	int position = qSvc.getTicketPosition(ticket.getQueueName(), ticket.getNumber());
-	String estimate = qSvc.estimate(position);
+        int position = qSvc.getTicketPosition(ticket.getQueueName(), ticket.getNumber());
+        String estimate = qSvc.estimate(position);
         return " Estimated time remaining: " + estimate;
     }
 
