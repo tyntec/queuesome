@@ -7,6 +7,7 @@ import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import com.tyntec.queuesome.queue.domain.QueueEntity;
 import com.tyntec.queuesome.queue.domain.QueueTicketEntity;
+import com.tyntec.queuesome.queue.repository.PassphraseProvider;
 import com.tyntec.queuesome.queue.repository.QueueBackendService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class SmsService {
 
     @Autowired
     AIDataService dataService;
+
+    @Autowired
+    PassphraseProvider passphrase;
 
     @RequestMapping(name = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_XML_VALUE)
     public String getSms(@RequestParam("From") String from, @RequestParam("To") String to, @RequestParam("Body") String body) throws AIServiceException {
@@ -70,7 +74,8 @@ public class SmsService {
                     queueTicketEntity = qSvc.enQueue(to, from);
                     QueueEntity queue = qSvc.getQueue(to);
                     return createSmsResponse("Welcome! Your ticket number is " + queueTicketEntity.getNumber() +
-                            ". There are " + (queue.getQueue().size() - 1) + " people waiting in front of you. " +
+                            " Passphrase: " + passphrase.generatePassphrase() + ". There are "
+                            + (queue.getQueue().size() - 1) + " people waiting in front of you. " +
                             getEstimationText(queueTicketEntity));
                 }
 
