@@ -37,7 +37,7 @@ public class RestcommNotifier implements Notifier {
         MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
         parameters.add("To", "+" + to);
         parameters.add("From", "+" + from);
-        parameters.add("Body",  text);
+        parameters.add("Body", text);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", authHeader);
