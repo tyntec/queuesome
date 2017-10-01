@@ -53,12 +53,13 @@ public class VoiceService {
             String response = null;
             if (queueTicketEntity == null) {
                 queueTicketEntity = qSvc.enQueue(to, from);
+                int position = qSvc.getTicketPosition(queueTicketEntity.getQueueName(), queueTicketEntity.getNumber());
                 response = createTtsResponse("Your ticket number is " + queueTicketEntity.getNumber() +
-                        ". Passphrase " + passphrase.generatePassphrase() + "." + getEstimationText(queueTicketEntity));
+                        ". Passphrase " + passphrase.generatePassphrase() + "." + getWaitingPeopleText(position) + getEstimationText(position));
             } else {
                 QueueEntity queue = qSvc.getQueue(to);
                 response = createTtsResponse("Appointment is already booked. Your ticket number is " + queueTicketEntity.getNumber()
-                        + ". There are " + (queue.getQueue().size() - 1) + " waiting in front of you." + getEstimationText(queueTicketEntity));
+                        + ". " + getWaitingPeopleText(queue.getQueue().size() - 1) + getEstimationText(queue.getQueue().size() - 1));
             }
 
             log.info("Response: {}", response);
@@ -67,10 +68,18 @@ public class VoiceService {
         return ResponseEntity.ok(null);
 
     }
+    
+    private String getWaitingPeopleText(int position) {
+	if (position == 0)
+	    return "No people are waiting in front of you.";
+	else
+	    if (position == 1)
+		return "1 person is waiting in front of you.";
+	    else
+		return "There are " + position + " people waiting in front of you.";
+    }
 
-    private String getEstimationText(QueueTicketEntity ticket) {
-        if (ticket == null) return "Ticket not found.";
-        int position = qSvc.getTicketPosition(ticket.getQueueName(), ticket.getNumber());
+    private String getEstimationText(int position) {
         String estimate = qSvc.estimate(position);
         return " Estimated time remaining: " + estimate;
     }
