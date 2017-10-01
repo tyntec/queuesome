@@ -38,7 +38,9 @@ public class VoiceService {
 
         log.info("Got inbound call From: {} To: {}, Direction: {}. Call status: {}", from, to, direction, callStatus);
 
-        if (callStatus.equalsIgnoreCase("initiated") || callStatus.equalsIgnoreCase("in-progress")) {
+        if (callStatus.equalsIgnoreCase("initiated")
+                || callStatus.equalsIgnoreCase("ringing")
+                || callStatus.equalsIgnoreCase("in-progress")) {
 
             to = to.replaceFirst("\\+", "").trim();
             log.info("Queue name >{}<", to);
